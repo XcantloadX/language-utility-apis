@@ -4,9 +4,8 @@ from hashlib import md5
 from urllib.parse import urlencode
 import time
 
-from .common import HTTPRequest
+from .common import HTTPRequest, UA
 
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
 KEY = "qCG2vdP92hOXDcKa"
 
 def _calc_sign(queries: dict[str, str], key: str):
@@ -69,3 +68,7 @@ def pronounce(language: str, word: str) -> HTTPRequest:
     url = "https://dict.youdao.com/pronounce/base?" + urlencode(queries)
     
     return HTTPRequest(url, "GET", headers, payload)
+
+__exports = [
+    pronounce
+]

@@ -12,12 +12,11 @@
             "console": "integratedTerminal"
         },
         {
-            // python test
-            "name": "Python: Current File",
+            "name": "Python: Run `backend` modules",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            
-        }
+            "cwd": "${workspaceFolder}/python/",
+            "module": "makolang.backends.${fileBasenameNoExtension}"
+        },
     ]
 }
