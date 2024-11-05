@@ -12,10 +12,10 @@ def random_uuid() -> str:
     return str(uuid4())
 
 class HTTPRequest(NamedTuple):
-    url: str
-    method: str
-    headers: Optional[dict[str, str]]
-    payload: Optional[dict[str, Any]]
+    url: str # public
+    method: str # public
+    headers: Optional[dict[str, str]] # public
+    payload: Optional[dict[str, Any]] # public
     
     def request(self):
         import requests
@@ -32,9 +32,9 @@ class HTTPRequest(NamedTuple):
     
 class UpstreamAPIError(Exception):
     def __init__(self, code: str, message: str|None, response: str|None) -> None:
-        self.code = code
-        self.message = message
-        self.response = response
+        self.code = code # public
+        self.message = message # public
+        self.response = response # public
         super().__init__(f'Upstream API error: {code} {message}')
 
 __exports = [ 

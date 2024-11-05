@@ -1,0 +1,2 @@
+PHP 5.4+
+需要 php_openssl
