@@ -1,5 +1,5 @@
 <?php
-
+require_once dirname(__FILE__).'/../utility/cache.php';
 require_once 'common.php';
 
 define('UNION_API', 'https://api.mojidict.com/parse/functions/union-api');
@@ -74,7 +74,7 @@ function search($word) {
         )
     );
     $context = stream_context_create($options);
-    $response = file_get_contents(UNION_API, false, $context);
+    $response = cached_file_get_contents(UNION_API, false, $context);
     $ret = json_decode($response, true);
 
     if ($ret['result']['code'] != 200) {
@@ -126,7 +126,7 @@ function pronounce($target_id) {
         )
     );
     $context = stream_context_create($options);
-    $response = file_get_contents(TTS_API, false, $context);
+    $response = cached_file_get_contents(TTS_API, false, $context);
     $ret = json_decode($response, true);
 
     if ($ret['result']['code'] != 200) {
