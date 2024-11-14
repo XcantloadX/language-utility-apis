@@ -38,7 +38,7 @@ class JSONResponse {
         if (is_object($data) && method_exists($data, 'toArray')) {
             return $data->toArray();
         } elseif (is_array($data)) {
-            return array_map([$this, 'toDict'], $data);
+            return $data;
         }
         return $data;
     }
@@ -60,8 +60,8 @@ class JSONResponse {
      * @param string $message 响应的消息。
      * @return JSONResponse 失败的 JSONResponse。
      */
-    public static function fail($code, $message) {
-        return new self($code, $message, null);
+    public static function fail($code, $message, $data = null) {
+        return new self($code, $message, $data);
     }
 
     /**

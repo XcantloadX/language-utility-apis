@@ -11,7 +11,7 @@ if ($action === 'search') {
     $word = isset($_GET['word']) ? $_GET['word'] : null;
     if ($word) {
         try {
-            $results = search($word);
+            $results = moji_search($word);
             echo json_encode(array('status' => 'success', 'data' => $results));
         } catch (Exception $e) {
             echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
@@ -25,7 +25,7 @@ if ($action === 'search') {
     $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : null;
     if ($target_id) {
         try {
-            $request = pronounce($target_id);
+            $request = moji_pronounce($target_id);
             if ($redirect) {
                 header('Location: '.$request->url);
                 exit;
@@ -47,7 +47,7 @@ elseif ($action === 'pronounce_ex') {
     // search($kanji) -> 找到第一个发音为 $katakana 的单词 -> pronounce($target_id)
     if ($kanji && $katakana) {
         try {
-            $results = search($kanji);
+            $results = moji_search($kanji);
             $target_id = null;
             foreach ($results as $result) {
                 // 勉強 | べんきょう ⓪
@@ -69,7 +69,7 @@ elseif ($action === 'pronounce_ex') {
                 $target_id = $results[0]->target_id;
             }
             if ($target_id) {
-                $request = pronounce($target_id);
+                $request = moji_pronounce($target_id);
                 if ($redirect) {
                     header('Location: '.$request->url);
                     exit;

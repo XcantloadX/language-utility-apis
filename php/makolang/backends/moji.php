@@ -41,7 +41,7 @@ class MojiWordDefinition {
  * @param string $word 单词
  * @return array 单词信息
  */
-function search($word) {
+function moji_search($word) {
     $payload = array(
         "functions" => array(
             array(
@@ -99,7 +99,7 @@ function search($word) {
  * @param string $target_id 单词 ID。由 `search` 函数返回。
  * @return HTTPRequest 发音音频 URL
  */
-function pronounce($target_id) {
+function moji_pronounce($target_id) {
     $payload = array(
         "tarId" => $target_id,
         "tarType" => 102,
@@ -150,9 +150,9 @@ function pronounce($target_id) {
  * @return HTTPRequest 发音音频 URL
  * @throws Exception
  */
-function pronounce_x($kanji, $katakana = null, $allow_fallback = false) {
+function moji_pronounce_x($kanji, $katakana = null, $allow_fallback = false) {
     // TODO !important 支持 katakana 与 kanji 二选一
-    $results = search($kanji);
+    $results = moji_search($kanji);
     $target_id = null;
 
     if ($katakana) {
@@ -175,7 +175,7 @@ function pronounce_x($kanji, $katakana = null, $allow_fallback = false) {
     }
 
     if ($target_id) {
-        return pronounce($target_id);
+        return moji_pronounce($target_id);
     } else {
         throw new Exception('No matching word found');
     }
@@ -186,14 +186,14 @@ register_backend('moji', 'word_search', function($lang, $word, $params) {
     if ($lang !== 'ja') {
         throw new UnSupportedLanguageException($lang);
     }
-    return search($word);
+    return moji_search($word);
 });
 
 register_backend('moji', 'word_pronounce', function($lang, $word, $params) {
     if ($lang !== 'ja') {
         throw new UnSupportedLanguageException($lang);
     }
-    return pronounce_x($word, isset($params['katakana']) ? $params['katakana'] : null, isset($params['allow_fallback']) ? $params['allow_fallback'] : false);
+    return moji_pronounce_x($word, isset($params['katakana']) ? $params['katakana'] : null, isset($params['allow_fallback']) ? $params['allow_fallback'] : false);
 });
 
 // 导出类和函数
