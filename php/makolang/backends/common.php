@@ -18,6 +18,55 @@ function random_uuid() {
     );
 }
 
+
+function register_backend($backend_name, $type, $function) {
+    if (!isset($GLOBALS['__registers'])) {
+        $GLOBALS['__registers'] = array(
+            'word_search' => array(),
+            'word_pronounce' => array()
+        );
+    }
+
+    if (!isset($GLOBALS['__registers'][$type])) {
+        throw new InvalidArgumentException("Invalid type: $type");
+    }
+
+    if (is_string($function)) {
+        $reflection = new ReflectionFunction($function);
+    } elseif (is_callable($function)) {
+        $reflection = new ReflectionFunction($function);
+    } else {
+        throw new InvalidArgumentException("Invalid function: must be a function name or a callable");
+    }
+    
+    $parameters = $reflection->getParameters();
+
+    // Helper function to check function signature
+    $check_func = function($parameters, $expected_params, $expected_return_type) use ($reflection) {
+        if (count($parameters) !== count($expected_params)) {
+            return false;
+        }
+        foreach ($parameters as $index => $param) {
+            if ($param->getType() != $expected_params[$index]) {
+                return false;
+            }
+        }
+        return $reflection->hasReturnType() && $reflection->getReturnType()->getName() === $expected_return_type;
+    };
+
+    // (string lang, string word) => any
+    // if ($type === 'word_search' && $check_func($parameters, ['string', 'string', 'array'], 'mixed')) {
+    //     $GLOBALS['__registers'][$type][$backend_name] = $function;
+    // }
+    // // (string lang, string word) => HTTPRequest
+    // elseif ($type === 'word_pronounce' && $check_func($parameters, ['string', 'string', 'array'], 'HTTPRequest')) {
+    //     $GLOBALS['__registers'][$type][$backend_name] = $function;
+    // } else {
+    //     throw new InvalidArgumentException("Invalid function signature for type: $type");
+    // }
+    $GLOBALS['__registers'][$type][$backend_name] = $function;
+}
+
 class HTTPRequest implements \JsonSerializable {
     public $url;
     public $method;

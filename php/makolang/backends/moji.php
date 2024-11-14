@@ -141,6 +141,61 @@ function pronounce($target_id) {
     );
 }
 
+/**
+ * 获取单词发音，支持直接通过汉字和假名获取发音。
+ * 
+ * @param string $kanji 汉字
+ * @param string|null $katakana 假名
+ * @param bool $allow_fallback 是否允许回退到第一个搜索结果
+ * @return HTTPRequest 发音音频 URL
+ * @throws Exception
+ */
+function pronounce_x($kanji, $katakana = null, $allow_fallback = false) {
+    // TODO !important 支持 katakana 与 kanji 二选一
+    $results = search($kanji);
+    $target_id = null;
+
+    if ($katakana) {
+        foreach ($results as $result) {
+            $title = $result->title;
+            $parts = explode('|', $title);
+            if (count($parts) == 2) {
+                $reading_part = trim($parts[1]);
+                $reading = trim(explode(' ', $reading_part)[0]);
+                if ($reading === $katakana) {
+                    $target_id = $result->target_id;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!$target_id && $allow_fallback) {
+        $target_id = $results[0]->target_id;
+    }
+
+    if ($target_id) {
+        return pronounce($target_id);
+    } else {
+        throw new Exception('No matching word found');
+    }
+}
+
+// 注册暴露 API
+register_backend('moji', 'word_search', function($lang, $word, $params) {
+    if ($lang !== 'ja') {
+        throw new UnSupportedLanguageException($lang);
+    }
+    return search($word);
+});
+
+register_backend('moji', 'word_pronounce', function($lang, $word, $params) {
+    if ($lang !== 'ja') {
+        throw new UnSupportedLanguageException($lang);
+    }
+    return pronounce_x($word, isset($params['katakana']) ? $params['katakana'] : null, isset($params['allow_fallback']) ? $params['allow_fallback'] : false);
+});
+
 // 导出类和函数
 $__exports = array(
     'MojiWordSearchResult',
@@ -148,13 +203,4 @@ $__exports = array(
     'search',
     'pronounce'
 );
-
-if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
-    $results = search("見る");
-    $result = $results[0];
-    $tts = pronounce($result->target_id);
-    var_dump($tts);
-    // $tts->save("pronounce.mp3");
-    // play_sound($tts);
-}
 ?>
