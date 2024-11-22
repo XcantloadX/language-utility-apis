@@ -1,5 +1,6 @@
 from typing import NamedTuple, Any, Optional
 from uuid import uuid4
+from dataclasses import dataclass
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
 
@@ -11,7 +12,8 @@ def random_uuid() -> str:
     """
     return str(uuid4())
 
-class HTTPRequest(NamedTuple):
+@dataclass
+class HTTPRequest:
     url: str # public
     method: str # public
     headers: Optional[dict[str, str]] # public

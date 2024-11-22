@@ -127,12 +127,45 @@ def pronounce(target_id: str) -> HTTPRequest:
         payload=None
     )
 
+def pronounce_x(
+    kanji: str,
+    kana: str,
+    allow_fallback: bool = False
+) -> HTTPRequest|None:
+    """
+    获取单词发音。
+    
+    :param kanji: 单词
+    :param kana: 假名
+    :param allow_fallback: 当未找到完全匹配的单词与假名时，是否允许直接返回第一个搜索结果
+    """
+    results = search(kanji)
+    target_id = None
+    for result in results:
+        title = result.title
+        parts = title.split('|')
+        if len(parts) == 2:
+            reading_part = parts[1].strip()
+            reading = reading_part.split(' ')[0].strip()
+            if reading == kana:
+                target_id = result.target_id
+                break
+
+    if not target_id and allow_fallback:
+        target_id = results[0].target_id
+
+    if target_id:
+        return pronounce(target_id)
+    else:
+        return None
+    
 
 __exports = [
     MojiWordSearchResult,
     MojiWordDefinition,
     search,
-    pronounce
+    pronounce,
+    pronounce_x
 ]
 
 if __name__ == "__main__":

@@ -18,5 +18,15 @@
             "cwd": "${workspaceFolder}/python/",
             "module": "makolang.backends.${fileBasenameNoExtension}"
         },
+        {
+            // makolang.api.server
+            "name": "Python: Flask server",
+            "type": "python",
+            "request": "launch",
+            "module": "makolang.api.server",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/python/",
+
+        }
     ]
 }
